@@ -1,11 +1,3 @@
-# Proxy for Reading the count (Note: No trailing slash at the end of the URL)
-
-/api/visit https://api.counterapi.dev/v1/ankur-portfolio-v1/homepage_visits 200
-
-# Proxy for Incrementing the count
-
-/api/visit/up https://api.counterapi.dev/v1/ankur-portfolio-v1/homepage_visits/up 200
-
-# Fallback for React Router (Keep this at the bottom)
-
-/\* /index.html 200
+/api/visit     https://api.counterapi.dev/v1/ankur-portfolio-v1/homepage_visits  200
+/api/visit/up  https://api.counterapi.dev/v1/ankur-portfolio-v1/homepage_visits/up  200
+/* /index.html 200

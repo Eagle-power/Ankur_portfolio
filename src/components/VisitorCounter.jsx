@@ -7,10 +7,11 @@ export default function VisitorCounter() {
   useEffect(() => {
     const cookieName = "has_visited_portfolio";
     const hasVisited = getCookie(cookieName);
- 
+
+   
     const apiUrl = hasVisited
-      ? "/api/visit" // This redirects to the read-only URL
-      : "/api/visit/up"; // This redirects to the increment URL
+      ? "/api/visit" // Proxy to read-only
+      : "/api/visit/up"; // Proxy to increment
 
     fetch(apiUrl)
       .then((res) => {
@@ -34,33 +35,27 @@ export default function VisitorCounter() {
   return (
     <div className="hidden lg:flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-xs font-medium text-gray-200 shadow-lg hover:bg-white/20 transition-all">
       <FaEye className="text-[#00bf8f]" />
-      <span>{visits.toLocaleString()} Visitors</span>
+      <span>{visits.toLocaleString()} Views</span>
     </div>
   );
 }
 
-// Function to SET a cookie with expiration in days
+// Helper functions  
 function setCookie(cname, cvalue, exdays) {
   const d = new Date();
   d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
   const expires = "expires=" + d.toUTCString();
-  // path=/ ensures the cookie works across your whole site
   document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
-// Function to GET a cookie by name
 function getCookie(cname) {
   const name = cname + "=";
   const decodedCookie = decodeURIComponent(document.cookie);
   const ca = decodedCookie.split(";");
   for (let i = 0; i < ca.length; i++) {
     let c = ca[i];
-    while (c.charAt(0) === " ") {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) === 0) {
-      return c.substring(name.length, c.length);
-    }
+    while (c.charAt(0) === " ") c = c.substring(1);
+    if (c.indexOf(name) === 0) return c.substring(name.length, c.length);
   }
   return "";
 }
