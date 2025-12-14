@@ -1,39 +1,43 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa";
+ 
+let visitPromise = null;
 
 export default function VisitorCounter() {
   const [visits, setVisits] = useState(0);
-  const hasCalledApi = useRef(false);
 
-  useEffect(() => {
-
-    if (hasCalledApi.current) return;
-
-    hasCalledApi.current = true;
-
-    const cookieName = "has_visited_portfolio";
-    const hasVisited = getCookie(cookieName);
-
-     
-     
-    const endpoint = hasVisited ? "/" : "/up";
+  useEffect(() => { 
+    if (!visitPromise) {
+      const cookieName = "has_visited_portfolio";
+      const hasVisited = getCookie(cookieName);
  
-    const apiUrl = `/api/visit${endpoint}`;
+      const endpoint = hasVisited ? "/" : "/up";
+      const apiUrl = `/api/visit${endpoint}`;
 
-    fetch(apiUrl)
-      .then((res) => { 
-        const type = res.headers.get("content-type");
-        if (type && type.includes("text/html")) throw new Error("Got HTML");
-        if (!res.ok) throw new Error("Network error");
-        return res.json();
-      })
-      .then((data) => {
-        setVisits(data.count);
-        if (!hasVisited) setCookie(cookieName, "true", 365);
-      })
+      // Start the request and store the Promise in our global variable
+      visitPromise = fetch(apiUrl)
+        .then((res) => {
+          const type = res.headers.get("content-type");
+          if (type && type.includes("text/html")) throw new Error("Got HTML");
+          if (!res.ok) throw new Error("Network error");
+          return res.json();
+        })
+        .then((data) => {
+          // Only set the cookie if we actually incremented
+          if (!hasVisited) {
+            setCookie(cookieName, "true", 365);
+          }
+          return data.count;
+        });
+    }
+
+    // 3. Consume the promise (whether it's new or cached)
+    visitPromise
+      .then((count) => setVisits(count))
       .catch((err) => {
         console.warn("Counter Error:", err);
-        setVisits(1200);
+        setVisits(1200); // Fallback
+        visitPromise = null; // Reset on error so we can try again later
       });
   }, []);
 
@@ -47,7 +51,7 @@ export default function VisitorCounter() {
   );
 }
 
-// Helper functions
+// --- Helper Functions ---
 function setCookie(cname, cvalue, exdays) {
   const d = new Date();
   d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
