@@ -10,7 +10,7 @@ export default function VisitorCounter() {
     if (hasCalledApi.current) return;
 
     hasCalledApi.current = true;
-    
+
     const cookieName = "has_visited_portfolio";
     const hasVisited = getCookie(cookieName);
 
@@ -40,7 +40,7 @@ export default function VisitorCounter() {
   if (!visits) return null;
 
   return (
-    <div className="hidden lg:flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-xs font-medium text-gray-200 shadow-lg hover:bg-white/20 transition-all">
+    <div className="inline-flex items-center gap-2 mt-4 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-xs font-medium text-gray-200 shadow-lg hover:bg-white/20 transition-all">
       <FaEye className="text-[#00bf8f]" />
       <span>{visits.toLocaleString()} Visitors</span>
     </div>
