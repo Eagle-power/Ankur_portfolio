@@ -5,17 +5,12 @@ export default function VisitorCounter() {
   const [visits, setVisits] = useState(0);
 
   useEffect(() => {
-    const namespace = "ankur-portfolio-v1";
-    const key = "homepage_visits";
     const cookieName = "has_visited_portfolio";
-
-    // 1. Check if the cookie exists
     const hasVisited = getCookie(cookieName);
-
-    // 2. Decide API URL based on cookie existence
+ 
     const apiUrl = hasVisited
-      ? `https://api.counterapi.dev/v1/${namespace}/${key}` // Read-only
-      : `https://api.counterapi.dev/v1/${namespace}/${key}/up`; // Increment
+      ? "/api/visit" // This redirects to the read-only URL
+      : "/api/visit/up"; // This redirects to the increment URL
 
     fetch(apiUrl)
       .then((res) => {
@@ -24,14 +19,12 @@ export default function VisitorCounter() {
       })
       .then((data) => {
         setVisits(data.count);
-
-        // 3. If new visitor, set cookie for 365 days
         if (!hasVisited) {
           setCookie(cookieName, "true", 365);
         }
       })
       .catch((err) => {
-        console.warn("Visitor counter error. Showing fallback.");
+        console.warn("Counter error:", err);
         setVisits(1200);
       });
   }, []);
@@ -45,7 +38,6 @@ export default function VisitorCounter() {
     </div>
   );
 }
- 
 
 // Function to SET a cookie with expiration in days
 function setCookie(cname, cvalue, exdays) {
