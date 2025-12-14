@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { FaXTwitter, FaLinkedin, FaGithub } from "react-icons/fa6";
+import VisitorCounter from "../components/VisitorCounter";
 
 const socials = [
   { Icon: FaXTwitter, label: "X", href: "https://x.com/AnkurKumar3520" },
@@ -73,7 +74,8 @@ export default function Footer() {
         </p>
         <p className="text-xs text-gray-400">
           &copy; {new Date().getFullYear()} Ankur Kumar | All rights reserved.
-        </p>
+        </p> 
+        <VisitorCounter />
       </motion.div>
     </footer>
   );
