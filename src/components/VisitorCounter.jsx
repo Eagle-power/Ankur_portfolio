@@ -8,24 +8,25 @@ export default function VisitorCounter() {
     const cookieName = "has_visited_portfolio";
     const hasVisited = getCookie(cookieName);
 
-   
-    const apiUrl = hasVisited
-      ? "/api/visit" // Proxy to read-only
-      : "/api/visit/up"; // Proxy to increment
+     
+     
+    const endpoint = hasVisited ? "/" : "/up";
+ 
+    const apiUrl = `/api/visit${endpoint}`;
 
     fetch(apiUrl)
-      .then((res) => {
-        if (!res.ok) throw new Error("Network response was not ok");
+      .then((res) => { 
+        const type = res.headers.get("content-type");
+        if (type && type.includes("text/html")) throw new Error("Got HTML");
+        if (!res.ok) throw new Error("Network error");
         return res.json();
       })
       .then((data) => {
         setVisits(data.count);
-        if (!hasVisited) {
-          setCookie(cookieName, "true", 365);
-        }
+        if (!hasVisited) setCookie(cookieName, "true", 365);
       })
       .catch((err) => {
-        console.warn("Counter error:", err);
+        console.warn("Counter Error:", err);
         setVisits(1200);
       });
   }, []);
@@ -40,7 +41,7 @@ export default function VisitorCounter() {
   );
 }
 
-// Helper functions  
+// Helper functions
 function setCookie(cname, cvalue, exdays) {
   const d = new Date();
   d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);

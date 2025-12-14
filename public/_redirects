@@ -1,3 +1,6 @@
-/api/visit     https://api.counterapi.dev/v1/ankur-portfolio-v1/homepage_visits  200
-/api/visit/up  https://api.counterapi.dev/v1/ankur-portfolio-v1/homepage_visits/up  200
-/* /index.html 200
+# We use the * (splat) to pass slashes and "up" automatically
+# Note the /:splat at the end of the target URL
+/api/visit/* https://api.counterapi.dev/v1/ankur-portfolio-v1/homepage_visits/:splat  200
+
+# Keep your fallback at the bottom
+/* /index.html  200
