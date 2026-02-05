@@ -62,14 +62,17 @@ export default function About() {
             </p>
             <p className="mt-4 text-gray-300 leading-relaxed text-base sm:text-lg max-w-2xl md:max-w-3xl [&_span]:text-[rgb(14,203,176)] [&_span]:font-semibold [&_span]:tracking-widest">
               I build scalable, modern application with a strong focus on clean
-              architecture, delightful UX, and performance. My toolkit spans <span>C</span>,
-              <span> Java</span>, <span> React</span>, <span>Node.js</span>, <span>Express.js</span>, <span>Tailwind CSS</span>, <span>MongoDB</span>, <span>MySql</span> and
-              <span> RESTful APIs</span> - bringing ideas to life from concept to production
-              with robust APIs and smooth interfaces.
+              architecture, delightful UX, and performance. My toolkit spans{" "}
+              <span>C</span>,<span> Java</span>, <span> React</span>,{" "}
+              <span>Node.js</span>, <span>Express.js</span>,{" "}
+              <span>Tailwind CSS</span>, <span>MongoDB</span>,{" "}
+              <span>MySql</span> and
+              <span> RESTful APIs</span> - bringing ideas to life from concept
+              to production with robust APIs and smooth interfaces.
             </p>
 
             {/* stats section - 3 box */}
-            <div className="mt-6 grid  grid-cols-3  gap-3 sm:gap-4 max-w-xl">
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 max-w-xl">
               {stats.map((s, i) => (
                 <motion.div
                   key={i}

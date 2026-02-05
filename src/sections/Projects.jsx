@@ -5,6 +5,9 @@ import img3 from "../assets/img3.png";
 import photo1 from "../assets/photo.png";
 import photo2 from "../assets/photo2.png";
 import photo3 from "../assets/photo3.png";
+import photo4 from "../assets/JobHunt.png";
+import photo5 from "../assets/JobHunt1.png";
+
 import {
   motion,
   AnimatePresence,
@@ -14,14 +17,13 @@ import {
 
 const useIsMobile = (query = "(max-width : 639px)") => {
   const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" && window.matchMedia(query).matches
+    typeof window !== "undefined" && window.matchMedia(query).matches,
   );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const mql = window.matchMedia(query);
-
     const handler = (e) => setIsMobile(e.matches);
 
     mql.addEventListener("change", handler);
@@ -40,7 +42,13 @@ export default function Project() {
   const projects = useMemo(
     () => [
       {
-        title: "InvSys",
+        title: "JobHunt - An Online Job Portal",
+        link: "https://jobhunt-obuw.onrender.com/",
+        bgColor: "#dc9317",
+        image: isMobile ? photo5 : photo4,
+      },
+      {
+        title: "InvSys - MultiStore Inventory management system",
         link: "https://invsys-frontend.vercel.app/",
         bgColor: "#3884d3",
         image: isMobile ? photo1 : img1,
@@ -58,7 +66,7 @@ export default function Project() {
         image: isMobile ? photo3 : img3,
       },
     ],
-    [isMobile]
+    [isMobile],
   );
 
   const { scrollYProgress } = useScroll({
@@ -87,22 +95,19 @@ export default function Project() {
         transition: "background-color 400ms ease",
       }}
     >
-      <div className="sticky  top-0 h-screen flex flex-col items-center justify-center">
+      <div className="sticky top-0 h-screen flex flex-col items-center justify-center">
         <h2
-          className={`text-3xl font-semibold z-10 text-center ${
-            isMobile ? "mt-4" : "mt-12"
-          }`}
+          className={`text-3xl font-semibold z-10 text-center ${isMobile ? "mt-4" : "mt-12"}`}
         >
           My Work
         </h2>
+
         <div
-          className={`relative w-full flex flex-1 items-center justify-center ${
-            isMobile ? "-mt-4" : ""
-          }`}
+          className={`relative w-full flex flex-1 items-center justify-center ${isMobile ? "-mt-4" : ""}`}
         >
           {projects.map((prjct, idx) => (
             <div
-              key={prjct.title} 
+              key={prjct.title}
               className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
                 activeIndex === idx
                   ? "opacity-100 z-20"
@@ -113,21 +118,15 @@ export default function Project() {
               <AnimatePresence mode="wait">
                 {activeIndex === idx && (
                   <motion.h3
-                    key={prjct.title}
                     initial={{ opacity: 0, y: -30 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 30 }}
-                    transition={{ duration: 0.5, ease: "easeOut" }} 
-                    className={`block text-center text-[clamp(1rem,6vw,3rem)] text-white/95 
-                        sm:absolute sm:-top-24 lg:-top-20 sm:left-0
-                        sm:mb-0 italic font-semibold 
-                          ${isMobile ? "-mt-24" : ""}
-                        `}
-                    style={{
-                      zIndex: 25, 
-                      textAlign: isMobile ? "center" : "left",
-                      width: "100%",  
-                    }}
+                    transition={{ duration: 0.5 }}
+                    className={`block text-center text-[clamp(1rem,6vw,3rem)] italic font-semibold ${
+                      isMobile
+                        ? "-mt-24"
+                        : "sm:absolute sm:-top-24 lg:-top-20 sm:left-0"
+                    }`}
                   >
                     {prjct.title}
                   </motion.h3>
@@ -136,46 +135,33 @@ export default function Project() {
 
               <div
                 className={`relative w-full overflow-hidden bg-black/20 shadow-2xl
-                  md:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.7)]  ${
-                    isMobile ? "mb-6  rounded-lg" : "mb-10 sm:mb-12 rounded-xl"
-                  }
-                  h-[62vh] sm:h-[66vh]
-                `}
-                style={{
-                  zIndex: 10,
-                  transition: "box-shadow 250ms ease",
-                }}
+                  ${isMobile ? "mb-6 rounded-lg" : "mb-10 sm:mb-12 rounded-xl"}
+                  h-[62vh] sm:h-[66vh]`}
               >
-                <img
+                <motion.img
                   src={prjct.image}
                   alt={prjct.title}
-                  className="w-full h-full object-cover drop-shadow-xl md:drop-shadow-2xl"
-                  style={{
-                    position: "relative",
-                    zIndex: 10,
-                    filter: "drop-shadow(0, 16px 14px  rgba(0,0,0,0,65)",
-                    transition: "filter 200ms ease",
-                  }}
+                  className="w-full h-full object-contain bg-black/30"
                   loading="lazy"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 120 }}
                 />
 
                 <div
                   className="pointer-events-none absolute inset-0"
                   style={{
-                    zIndex: 11,
                     background:
-                      "linear-gradient(180deg , rgba(0,0,0,0.12) 0% , rgba(0,0,0,0) 40%)",
+                      "linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0) 40%)",
                   }}
-                ></div>
+                />
               </div>
 
-              <div className={`absolute left-1/2 -translate-x-1/2`}>
+              <div className="absolute left-1/2 -translate-x-1/2">
                 <a
                   href={activeProject?.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block px-6 py-3 font-semibold text-xl  rounded-lg  bg-white text-black hover:bg-gray-200 transition-all"
-                  aria-label={`View ${activeProject?.title}`}
+                  className="inline-block px-6 py-3 font-semibold text-xl rounded-lg bg-white text-black hover:bg-gray-200 transition-all"
                 >
                   View Project
                 </a>

@@ -55,7 +55,7 @@ export default function Home() {
     return () => clearTimeout(timeout);
   }, [subIndex, index, deleting, roles]);
  
-  const resumeUrl = "/Sofos.pdf";
+  const resumeUrl = "/Ankur_Kumar_updated.pdf";
   const filename = "Ankur_Kumar_Resume.pdf";
 
   const handleOpenResume = (shouldDownload) => {
