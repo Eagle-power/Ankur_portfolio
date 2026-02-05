@@ -20,7 +20,7 @@ export default function VisitorCounter() {
           const type = res.headers.get("content-type");
           if (type && type.includes("text/html")) throw new Error("Got HTML");
           if (!res.ok) throw new Error("Network error");
-          return res.json();
+          return res.json();  // if everything is ok 200
         })
         .then((data) => {
           // Only set the cookie if we actually incremented

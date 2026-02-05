@@ -1,12 +1,10 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { div } from "framer-motion/client";
 import { useEffect, useMemo, useState } from "react";
 
 export default function IntroAnimation({ onFinish }) {
   const greetings = useMemo(
     () => [
       "Hello",
-      ,
       "नमस्ते",
       "Hallo",
       "Hola",
