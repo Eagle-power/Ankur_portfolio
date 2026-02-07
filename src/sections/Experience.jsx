@@ -173,7 +173,7 @@ export default function Experience() {
         </div>
       </div>
       {/* Mobile exit spacer to avoid next section overlap */}
-      {isMobile && <div className="h-[30vh] bg-black" />}
+      {isMobile && <div className="h-[50vh] bg-black" />}
     </section>
   );
 }
