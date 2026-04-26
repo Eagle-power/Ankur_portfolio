@@ -89,19 +89,17 @@ export default function VisitorCounter() {
   const [visits, setVisits] = useState(0);
 
   useEffect(() => {
+    const cookieName = "has_visited_portfolio";
+    const hasVisited = getCookie(cookieName);
+
     const storedCount = localStorage.getItem("visitor_count");
 
-    // ✅ Skip API if already cached
+    // ✅ Show cached value instantly (fast UI)
     if (storedCount) {
       setVisits(Number(storedCount));
-      return;
     }
 
     if (!visitPromise) {
-      const cookieName = "has_visited_portfolio";
-      const hasVisited = getCookie(cookieName);
-
-      // ✅ CALL NETLIFY FUNCTION (NOT API NINJAS DIRECTLY)
       const apiUrl = hasVisited
         ? "/.netlify/functions/visit"
         : "/.netlify/functions/visit?hit=true";
@@ -109,24 +107,31 @@ export default function VisitorCounter() {
       visitPromise = fetch(apiUrl)
         .then((res) => res.json())
         .then((data) => {
+          if (!data || data.error) {
+            throw new Error("Invalid response");
+          }
+
           const count = data.value || 0;
 
+          // ✅ update cookie if first visit
           if (!hasVisited) {
             setCookie(cookieName, "true", 365);
           }
 
+          // ✅ update UI with fresh value
+          setVisits(count);
+
+          // ✅ update cache
           localStorage.setItem("visitor_count", count);
 
           return count;
         });
     }
 
-    visitPromise
-      .then((count) => setVisits(count))
-      .catch(() => {
-        setVisits(1200);
-        visitPromise = null;
-      });
+    visitPromise.catch(() => {
+      setVisits((prev) => prev || 1200);
+      visitPromise = null;
+    });
   }, []);
 
   return (
