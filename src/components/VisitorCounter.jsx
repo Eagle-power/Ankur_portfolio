@@ -1,47 +1,148 @@
+// import { useEffect, useState } from "react";
+// import { FaEye } from "react-icons/fa";
+
+// let visitPromise = null;
+
+// export default function VisitorCounter() {
+//   const [visits, setVisits] = useState(0);
+
+//   useEffect(() => {
+//     if (!visitPromise) {
+//       const cookieName = "has_visited_portfolio";
+//       const hasVisited = getCookie(cookieName);
+
+//       // const endpoint = hasVisited ? "/" : "/up";
+//       // const apiUrl = `/api/visit${endpoint}`;
+
+//       const apiUr = hasVisited ? "https://api.api-ninjas.com/v1/counter?id=portfolio"
+//         : "https://api.api-ninjas.com/v1/counter?id=portfolio&hit=true";
+
+//       // Start the request and store the Promise in our global variable
+//       visitPromise = fetch(apiUrl, {
+//         headers: {
+//           "X-Api-Key": "[ENCRYPTION_KEY]"
+//         }
+//       })
+//         .then((res) => {
+//           const type = res.headers.get("content-type");
+//           if (type && type.includes("text/html")) throw new Error("Got HTML");
+//           if (!res.ok) throw new Error("Network error");
+//           return res.json();  // if everything is ok 200
+//         })
+//         .then((data) => {
+//           // Only set the cookie if we actually incremented
+//           if (!hasVisited) {
+//             setCookie(cookieName, "true", 365);
+//           }
+//           return data.count;
+//         });
+//     }
+
+//     // 3. Consume the promise (whether it's new or cached)
+//     visitPromise
+//       .then((count) => setVisits(count))
+//       .catch((err) => {
+//         console.warn("Counter Error:", err);
+//         setVisits(1200); // Fallback
+//         visitPromise = null; // Reset on error so we can try again later
+//       });
+//   }, []);
+
+//   if (!visits) return null;
+
+//   return (
+//     <div className="inline-flex items-center gap-2 mt-4 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-xs font-medium text-gray-200 shadow-lg hover:bg-white/20 transition-all">
+//       <FaEye className="text-[#00bf8f]" />
+//       <span>{visits.toLocaleString()} Visitors</span>
+//     </div>
+//   );
+// }
+
+// // --- Helper Functions ---
+// function setCookie(cname, cvalue, exdays) {
+//   const d = new Date();
+//   d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+//   const expires = "expires=" + d.toUTCString();
+//   document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+// }
+
+// function getCookie(cname) {
+//   const name = cname + "=";
+//   const decodedCookie = decodeURIComponent(document.cookie);
+//   const ca = decodedCookie.split(";");
+//   for (let i = 0; i < ca.length; i++) {
+//     let c = ca[i];
+//     while (c.charAt(0) === " ") c = c.substring(1);
+//     if (c.indexOf(name) === 0) return c.substring(name.length, c.length);
+//   }
+//   return "";
+// }
+
+
+
 import { useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa";
- 
+
+
+const API_Key = import.meta.env.VITE_API_NINJA_KEY;
+
 let visitPromise = null;
 
 export default function VisitorCounter() {
   const [visits, setVisits] = useState(0);
 
-  useEffect(() => { 
+  useEffect(() => {
+    const storedCount = localStorage.getItem("visitor_count");
+
+    // ✅ If already visited AND count exists → skip API call
+    if (storedCount) {
+      setVisits(Number(storedCount));
+      return;
+    }
+
+    // 👇 only first time hit API
     if (!visitPromise) {
       const cookieName = "has_visited_portfolio";
       const hasVisited = getCookie(cookieName);
- 
-      const endpoint = hasVisited ? "/" : "/up";
-      const apiUrl = `/api/visit${endpoint}`;
 
-      // Start the request and store the Promise in our global variable
-      visitPromise = fetch(apiUrl)
-        .then((res) => {
-          const type = res.headers.get("content-type");
-          if (type && type.includes("text/html")) throw new Error("Got HTML");
-          if (!res.ok) throw new Error("Network error");
-          return res.json();  // if everything is ok 200
-        })
+      const apiUrl = hasVisited
+        ? "https://api.api-ninjas.com/v1/counter?id=portfolio"
+        : "https://api.api-ninjas.com/v1/counter?id=portfolio&hit=true";
+
+      visitPromise = fetch(apiUrl, {
+        headers: {
+          "X-Api-Key": API_Key,
+        },
+      })
+        .then((res) => res.json())
         .then((data) => {
-          // Only set the cookie if we actually incremented
+          const count = data.value || 0;
+
           if (!hasVisited) {
             setCookie(cookieName, "true", 365);
           }
-          return data.count;
+
+          localStorage.setItem("visitor_count", count);
+
+          return count;
         });
     }
 
-    // 3. Consume the promise (whether it's new or cached)
-    visitPromise
-      .then((count) => setVisits(count))
-      .catch((err) => {
-        console.warn("Counter Error:", err);
-        setVisits(1200); // Fallback
-        visitPromise = null; // Reset on error so we can try again later
-      });
+    visitPromise.then(setVisits).catch(() => {
+      setVisits(1200);
+      visitPromise = null;
+    });
   }, []);
 
-  if (!visits) return null;
+
+  if (visits === 0) {
+    return (
+      <div className="inline-flex items-center gap-2 mt-4 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-xs font-medium text-gray-200 shadow-lg hover:bg-white/20 transition-all">
+        <FaEye className="text-[#00bf8f]" />
+        <span>{visits.toLocaleString()} Visitors</span>
+      </div>
+    );
+  }
 
   return (
     <div className="inline-flex items-center gap-2 mt-4 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-xs font-medium text-gray-200 shadow-lg hover:bg-white/20 transition-all">
@@ -51,22 +152,30 @@ export default function VisitorCounter() {
   );
 }
 
-// --- Helper Functions ---
+// --------------------
+// Cookie Helpers
+// --------------------
+
 function setCookie(cname, cvalue, exdays) {
   const d = new Date();
   d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
-  const expires = "expires=" + d.toUTCString();
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+
+  document.cookie =
+    cname + "=" + cvalue + ";expires=" + d.toUTCString() + ";path=/";
 }
 
 function getCookie(cname) {
   const name = cname + "=";
   const decodedCookie = decodeURIComponent(document.cookie);
   const ca = decodedCookie.split(";");
+
   for (let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === " ") c = c.substring(1);
-    if (c.indexOf(name) === 0) return c.substring(name.length, c.length);
+    let c = ca[i].trim();
+
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
   }
+
   return "";
 }

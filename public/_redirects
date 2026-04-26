@@ -1,8 +1,5 @@
 https://devankur.netlify.app/* https://ankurkr.in/:splat 301!
 
-# We use the * (splat) to pass slashes and "up" automatically
-# Note the /:splat at the end of the target URL
-/api/visit/* https://api.counterapi.dev/v1/ankur-portfolio-v1/homepage_visits/:splat  200
 
 # Keep your fallback at the bottom
 /* /index.html  200
