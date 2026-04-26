@@ -1,6 +1,6 @@
 export async function handler(event) {
     try {
-        const hit = event.queryStringParameters.hit === "true";
+        const hit = event.queryStringParameters?.hit === "true";
 
         const url = hit
             ? "https://api.api-ninjas.com/v1/counter?id=portfolio&hit=true"
