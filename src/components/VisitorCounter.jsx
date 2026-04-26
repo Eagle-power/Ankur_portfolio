@@ -83,9 +83,6 @@
 import { useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa";
 
-
-const API_Key = import.meta.env.VITE_API_NINJA_KEY;
-
 let visitPromise = null;
 
 export default function VisitorCounter() {
@@ -94,26 +91,22 @@ export default function VisitorCounter() {
   useEffect(() => {
     const storedCount = localStorage.getItem("visitor_count");
 
-    // ✅ If already visited AND count exists → skip API call
+    // ✅ Skip API if already cached
     if (storedCount) {
       setVisits(Number(storedCount));
       return;
     }
 
-    // 👇 only first time hit API
     if (!visitPromise) {
       const cookieName = "has_visited_portfolio";
       const hasVisited = getCookie(cookieName);
 
+      // ✅ CALL NETLIFY FUNCTION (NOT API NINJAS DIRECTLY)
       const apiUrl = hasVisited
-        ? "https://api.api-ninjas.com/v1/counter?id=portfolio"
-        : "https://api.api-ninjas.com/v1/counter?id=portfolio&hit=true";
+        ? "/.netlify/functions/visit"
+        : "/.netlify/functions/visit?hit=true";
 
-      visitPromise = fetch(apiUrl, {
-        headers: {
-          "X-Api-Key": API_Key,
-        },
-      })
+      visitPromise = fetch(apiUrl)
         .then((res) => res.json())
         .then((data) => {
           const count = data.value || 0;
@@ -128,21 +121,13 @@ export default function VisitorCounter() {
         });
     }
 
-    visitPromise.then(setVisits).catch(() => {
-      setVisits(1200);
-      visitPromise = null;
-    });
+    visitPromise
+      .then((count) => setVisits(count))
+      .catch(() => {
+        setVisits(1200);
+        visitPromise = null;
+      });
   }, []);
-
-
-  if (visits === 0) {
-    return (
-      <div className="inline-flex items-center gap-2 mt-4 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-xs font-medium text-gray-200 shadow-lg hover:bg-white/20 transition-all">
-        <FaEye className="text-[#00bf8f]" />
-        <span>{visits.toLocaleString()} Visitors</span>
-      </div>
-    );
-  }
 
   return (
     <div className="inline-flex items-center gap-2 mt-4 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-xs font-medium text-gray-200 shadow-lg hover:bg-white/20 transition-all">
@@ -171,7 +156,6 @@ function getCookie(cname) {
 
   for (let i = 0; i < ca.length; i++) {
     let c = ca[i].trim();
-
     if (c.indexOf(name) === 0) {
       return c.substring(name.length, c.length);
     }
